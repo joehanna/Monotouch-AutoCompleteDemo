@@ -1,89 +1,98 @@
 using System;
-using System.Drawing;
+using CoreGraphics;
 
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using System.Linq;
 using System.Threading;
 
-namespace AutoCompleteDemo {
+namespace AutoCompleteDemo
+{
 
-	public partial class AutoCompleteDemoViewController : UIViewController {
-		UITableView autoCompleteTable;
+  public partial class AutoCompleteDemoViewController : UIViewController
+  {
+    UITableView autoCompleteTable;
 
-		string[] wordCollection = {"blah", "bleh", "blop", "boing", "derp", "deep"};
+    string[] wordCollection = { "blah", "bleh", "blop", "boing", "derp", "deep" };
 
-		public AutoCompleteDemoViewController () : base ("AutoCompleteDemoViewController", null){
-		}
-		
-		public override void DidReceiveMemoryWarning () {
-			base.DidReceiveMemoryWarning ();
-		}
-		
-		public override void ViewDidLoad () {
-			base.ViewDidLoad ();
+    public AutoCompleteDemoViewController () : base ("AutoCompleteDemoViewController", null)
+    {
+    }
 
-			autoCompleteTable = new UITableView (new RectangleF (10, 80, 300, 120));
-			autoCompleteTable.ScrollEnabled = true;
-			autoCompleteTable.BackgroundColor = UIColor.Gray;
-			autoCompleteTable.SeparatorColor = UIColor.Blue;
+    public override void DidReceiveMemoryWarning ()
+    {
+      base.DidReceiveMemoryWarning ();
+    }
 
-			autoCompleteTable.Hidden = true;
+    public override void ViewDidLoad ()
+    {
+      base.ViewDidLoad ();
 
-			this.View.AddSubview(autoCompleteTable);
+      autoCompleteTable = new UITableView (new CGRect (10, 80, 300, 120));
+      autoCompleteTable.ScrollEnabled = true;
+      autoCompleteTable.BackgroundColor = UIColor.Gray;
+      autoCompleteTable.SeparatorColor = UIColor.Blue;
 
-			textInput.ShouldChangeCharacters += (sender, something, e) => {
-				Thread autoCompleteThread = new Thread (() => {
-					UpdateSuggestions();
-				});
-				autoCompleteThread.Start ();
-				return true;
-			};
-		}
+      autoCompleteTable.Hidden = true;
 
-		public void UpdateSuggestions() {
-			string[] suggestions = null;
+      this.View.AddSubview (autoCompleteTable);
 
-			try {
-				InvokeOnMainThread(() => {
-					suggestions = wordCollection.Where (x => x.ToLowerInvariant().Contains(textInput.Text))
-						.OrderByDescending(x => x.ToLowerInvariant().StartsWith(textInput.Text))
-						.Select (x => x).ToArray();
-				});
+      textInput.ShouldChangeCharacters += (sender, something, e) => {
+        Thread autoCompleteThread = new Thread (() => {
+          UpdateSuggestions ();
+        });
+        autoCompleteThread.Start ();
+        return true;
+      };
+    }
 
-				if (suggestions.Length != 0) {
-					InvokeOnMainThread(() => {
-						autoCompleteTable.Hidden = false;
-						autoCompleteTable.Source = new AutoCompleteTableSource(suggestions, this);
-						autoCompleteTable.ReloadData();
-					});
-				} else {
-					InvokeOnMainThread(() => {
-						autoCompleteTable.Hidden = true;
-					});
-				}
-			} catch(Exception) {
-				Console.WriteLine("Error: Can't retrieve suggestions");
-			}
-		}
+    public void UpdateSuggestions ()
+    {
+      string[] suggestions = null;
 
-		public void SetAutoCompleteText(string finalString) {
-			textInput.Text = finalString;
-			textInput.ResignFirstResponder();
-			autoCompleteTable.Hidden = true;
+      try {
+        InvokeOnMainThread (() => {
+          suggestions = wordCollection.Where (x => x.ToLowerInvariant ().Contains (textInput.Text))
+            .OrderByDescending (x => x.ToLowerInvariant ().StartsWith (textInput.Text))
+            .Select (x => x).ToArray ();
+        });
 
-			labelSelection.Text = "You selected: " + finalString;
-			labelSelection.Hidden = false;
-		}
-		
-		public override void ViewDidUnload () {
-			base.ViewDidUnload ();
-			ReleaseDesignerOutlets ();
-		}
-		
-		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation) {
-			return (toInterfaceOrientation != UIInterfaceOrientation.PortraitUpsideDown);
-		}
-	}
+        if (suggestions.Length != 0) {
+          InvokeOnMainThread (() => {
+            autoCompleteTable.Hidden = false;
+            autoCompleteTable.Source = new AutoCompleteTableSource (suggestions, this);
+            autoCompleteTable.ReloadData ();
+          });
+        } else {
+          InvokeOnMainThread (() => {
+            autoCompleteTable.Hidden = true;
+          });
+        }
+      } catch (Exception) {
+        Console.WriteLine ("Error: Can't retrieve suggestions");
+      }
+    }
+
+    public void SetAutoCompleteText (string finalString)
+    {
+      textInput.Text = finalString;
+      textInput.ResignFirstResponder ();
+      autoCompleteTable.Hidden = true;
+
+      labelSelection.Text = "You selected: " + finalString;
+      labelSelection.Hidden = false;
+    }
+
+    public override void ViewDidUnload ()
+    {
+      base.ViewDidUnload ();
+      ReleaseDesignerOutlets ();
+    }
+
+    public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
+    {
+      return (toInterfaceOrientation != UIInterfaceOrientation.PortraitUpsideDown);
+    }
+  }
 }
 

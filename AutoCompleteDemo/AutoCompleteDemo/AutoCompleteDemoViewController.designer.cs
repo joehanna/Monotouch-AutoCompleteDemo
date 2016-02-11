@@ -4,30 +4,30 @@
 // actions made in the Xcode designer. If it is removed, they will be lost.
 // Manual changes to this file may not be handled correctly.
 //
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace AutoCompleteDemo
 {
-	[Register ("AutoCompleteDemoViewController")]
-	partial class AutoCompleteDemoViewController
-	{
-		[Outlet]
-		MonoTouch.UIKit.UITextField textInput { get; set; }
+  [Register ("AutoCompleteDemoViewController")]
+  partial class AutoCompleteDemoViewController
+  {
+    [Outlet]
+    UIKit.UITextField textInput { get; set; }
 
-		[Outlet]
-		MonoTouch.UIKit.UILabel labelSelection { get; set; }
-		
-		void ReleaseDesignerOutlets ()
-		{
-			if (textInput != null) {
-				textInput.Dispose ();
-				textInput = null;
-			}
+    [Outlet]
+    UIKit.UILabel labelSelection { get; set; }
 
-			if (labelSelection != null) {
-				labelSelection.Dispose ();
-				labelSelection = null;
-			}
-		}
-	}
+    void ReleaseDesignerOutlets ()
+    {
+      if (textInput != null) {
+        textInput.Dispose ();
+        textInput = null;
+      }
+
+      if (labelSelection != null) {
+        labelSelection.Dispose ();
+        labelSelection = null;
+      }
+    }
+  }
 }
